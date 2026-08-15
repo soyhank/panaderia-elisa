@@ -1,0 +1,98 @@
+---
+import { products, categories, fmt, type Category } from '../data/products';
+import { wa } from '../data/site';
+import Icons from './Icons.astro';
+
+const featured = products.filter((p) => p.img);
+const cats = categories.filter((c) => c.id !== 'todos') as { id: Category; label: string }[];
+const byCat = (id: Category) => products.filter((p) => p.cat === id);
+const orderMsg = (n: string) => `Hola Elisa 👋, quisiera pedir: ${n}. ¿Me confirmas disponibilidad?`;
+---
+<section id="carta" class="scroll-mt-24 bg-cream-2/50 py-20 sm:py-28">
+  <div class="container-x">
+    <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between reveal">
+      <div>
+        <p class="eyebrow">Nuestros productos</p>
+        <h2 class="mt-4 text-4xl font-medium leading-tight tracking-tight sm:text-5xl">La carta</h2>
+        <p class="mt-3 max-w-lg text-cocoa">Precios por porción en soles. Tortas enteras, bocaditos y pedidos especiales se cotizan por WhatsApp.</p>
+      </div>
+      <div class="flex flex-wrap gap-2" role="tablist" aria-label="Filtrar por categoría" id="cat-tabs">
+        {categories.map((c, i) => (
+          <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-cat={c.id}
+            class="rounded-full border px-4 py-2 text-sm font-medium transition aria-selected:bg-choco aria-selected:text-cream aria-selected:border-choco border-choco/15 bg-white/60 text-cocoa hover:border-choco/40">
+            {c.label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- destacados con foto -->
+    <div id="menu-grid" class="mt-10 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
+      {featured.map((p, i) => (
+        <article data-cat={p.cat} class="group reveal flex flex-col overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-choco/5 transition duration-300 hover:-translate-y-1 hover:shadow-lift" style={`transition-delay:${(i % 4) * 60}ms`}>
+          <a href={wa(orderMsg(p.name))} target="_blank" rel="noopener" class="relative block overflow-hidden" aria-label={`Pedir ${p.name} por WhatsApp`}>
+            <img src={p.img} alt={p.name} width="640" height="640" loading="lazy" class="aspect-square w-full object-cover transition duration-700 group-hover:scale-105" />
+            {p.price && <span class="absolute left-3 top-3 rounded-full bg-cream/95 px-3 py-1 text-xs font-bold text-choco shadow-soft">{fmt(p.price)}</span>}
+          </a>
+          <div class="flex flex-1 flex-col p-4">
+            <h3 class="font-display text-[1.05rem] font-semibold leading-snug">{p.name}</h3>
+            <p class="mt-1 text-xs text-mocha">{p.note ?? categories.find((c) => c.id === p.cat)?.label}</p>
+            <a href={wa(orderMsg(p.name))} target="_blank" rel="noopener" class="mt-auto inline-flex items-center gap-1.5 pt-3 text-sm font-semibold text-terra transition hover:text-terra-2">
+              Pedir <Icons name="arrow" class="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- lista completa -->
+    <div class="mt-16 reveal">
+      <div class="flex items-center gap-4">
+        <h3 class="font-display text-2xl font-semibold">Carta completa</h3>
+        <span class="h-px flex-1 bg-choco/10"></span>
+      </div>
+      <div id="menu-list" class="mt-6 grid gap-x-12 gap-y-8 md:grid-cols-2 xl:grid-cols-3">
+        {cats.map((c) => (
+          <div data-cat={c.id}>
+            <h4 class="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-terra">{c.label}</h4>
+            <ul class="divide-y divide-choco/10">
+              {byCat(c.id).map((p) => (
+                <li>
+                  <a href={wa(orderMsg(p.name))} target="_blank" rel="noopener" class="group flex items-baseline gap-2 py-2.5 transition hover:text-terra" title="Pedir por WhatsApp">
+                    <span class="font-medium">{p.name}</span>
+                    <span class="mx-1 flex-1 border-b border-dotted border-choco/25 group-hover:border-terra/50"></span>
+                    <span class="shrink-0 text-sm font-semibold tabular-nums">{p.price ? fmt(p.price) : <span class="font-normal text-mocha">{p.note ?? 'Consultar'}</span>}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <p id="menu-empty" class="hidden py-8 text-center text-mocha">No hay productos en esta categoría.</p>
+    </div>
+
+    <div class="mt-12 flex flex-col items-center justify-between gap-4 rounded-3xl bg-choco px-6 py-8 text-cream sm:flex-row sm:px-10 reveal">
+      <div>
+        <p class="font-display text-2xl font-semibold">¿Buscas algo que no está en la carta?</p>
+        <p class="mt-1 text-cream/70">Cuéntanos tu antojo y lo preparamos para ti.</p>
+      </div>
+      <a href={wa('Hola Elisa 👋, quisiera consultar por un pedido especial.')} target="_blank" rel="noopener" class="btn-wa shrink-0"><Icons name="wa" class="h-4 w-4" /> Consultar por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('#cat-tabs [role=tab]');
+  const cards = document.querySelectorAll<HTMLElement>('#menu-grid [data-cat]');
+  const groups = document.querySelectorAll<HTMLElement>('#menu-list [data-cat]');
+  const empty = document.getElementById('menu-empty')!;
+  const apply = (cat: string) => {
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.cat === cat)));
+    let visible = 0;
+    cards.forEach((c) => { const show = cat === 'todos' || c.dataset.cat === cat; c.classList.toggle('hidden', !show); if (show) visible++; c.classList.add('in'); });
+    groups.forEach((g) => g.classList.toggle('hidden', !(cat === 'todos' || g.dataset.cat === cat)));
+    empty.classList.toggle('hidden', visible > 0);
+  };
+  tabs.forEach((t) => t.addEventListener('click', () => apply(t.dataset.cat!)));
+</script>

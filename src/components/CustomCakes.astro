@@ -1,0 +1,50 @@
+---
+import { wa } from '../data/site';
+import Icons from './Icons.astro';
+const gallery = [
+  { src: '/img/torta-corazon.webp', w: 800, h: 1000, alt: 'Torta corazón personalizada con nombre y crema rosa', label: 'Corazón vintage' },
+  { src: '/img/torta-happy-birthday-p.webp', w: 600, h: 750, alt: 'Torta alta blanca decorada con flores rojas y topper Happy Birthday', label: 'Cumpleaños floral' },
+  { src: '/img/torta-cumple-rosas-p.webp', w: 440, h: 550, alt: 'Torta de chocolate con rosas de crema y dedicatoria', label: 'Chocolate y rosas' },
+  { src: '/img/torta-clasica-p.webp', w: 600, h: 750, alt: 'Torta blanca clásica con detalles en crema', label: 'Clásica elegante' },
+];
+const steps = [
+  { n: '01', t: 'Cuéntanos tu idea', d: 'Sabor, tamaño, colores, tema y fecha de entrega.' },
+  { n: '02', t: 'Te cotizamos', d: 'Recibes propuesta y precio por WhatsApp el mismo día.' },
+  { n: '03', t: 'La preparamos fresca', d: 'Horneada y decorada a mano para tu celebración.' },
+];
+---
+<section id="tortas" class="scroll-mt-24 py-20 sm:py-28">
+  <div class="container-x">
+    <div class="mx-auto max-w-2xl text-center reveal">
+      <p class="eyebrow justify-center before:hidden">Tortas personalizadas</p>
+      <h2 class="mt-4 text-4xl font-medium leading-tight tracking-tight sm:text-5xl">
+        Tu celebración merece <em class="font-light italic text-terra">una torta única</em>
+      </h2>
+      <p class="mt-4 text-lg text-cocoa">Diseñamos tortas al gusto, antojo y pedido de cada cliente: cumpleaños, aniversarios, baby showers y más.</p>
+    </div>
+
+    <div class="mt-12 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+      {gallery.map((g, i) => (
+        <figure class={`group reveal relative overflow-hidden rounded-3xl shadow-soft ${i % 2 === 1 ? 'lg:mt-10' : ''}`} style={`transition-delay:${i * 80}ms`}>
+          <img src={g.src} alt={g.alt} width={g.w} height={g.h} loading="lazy" class="aspect-[4/5] w-full object-cover transition duration-700 group-hover:scale-105" />
+          <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-choco/80 to-transparent p-4 pt-12 font-display text-lg italic text-cream">{g.label}</figcaption>
+        </figure>
+      ))}
+    </div>
+
+    <div class="mt-14 grid gap-6 rounded-[2rem] border border-choco/10 bg-white/60 p-6 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center reveal">
+      <ol class="grid gap-6 sm:grid-cols-3">
+        {steps.map((s) => (
+          <li>
+            <span class="font-display text-3xl font-light text-terra">{s.n}</span>
+            <p class="mt-2 font-semibold">{s.t}</p>
+            <p class="mt-1 text-sm leading-relaxed text-mocha">{s.d}</p>
+          </li>
+        ))}
+      </ol>
+      <a href={wa('Hola Elisa 👋, quisiera cotizar una torta personalizada. Fecha: ___ · Personas: ___ · Sabor: ___ · Tema: ___')} target="_blank" rel="noopener" class="btn-primary justify-self-start lg:justify-self-end">
+        Cotizar mi torta <Icons name="arrow" class="h-4 w-4" />
+      </a>
+    </div>
+  </div>
+</section>

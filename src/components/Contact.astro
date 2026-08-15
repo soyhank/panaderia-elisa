@@ -1,0 +1,38 @@
+---
+import { site, wa } from '../data/site';
+import Icons from './Icons.astro';
+const socials = [
+  { icon: 'ig', label: 'Instagram', href: site.social.instagram, handle: `@${site.handle}` },
+  { icon: 'tt', label: 'TikTok', href: site.social.tiktok, handle: `@${site.handle}` },
+  { icon: 'fb', label: 'Facebook', href: site.social.facebook, handle: `@${site.handle}` },
+] as const;
+---
+<section id="contacto" class="scroll-mt-24 relative py-20 sm:py-28">
+  <div aria-hidden="true" class="grid-paper pointer-events-none absolute inset-x-0 bottom-0 h-56"></div>
+  <div class="container-x relative">
+    <div class="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-center">
+      <div class="reveal">
+        <p class="eyebrow">Contacto</p>
+        <h2 class="mt-4 font-display text-5xl font-medium leading-[1.05] tracking-tight sm:text-6xl">
+          <em class="font-light italic text-terra">Un sabor</em><br />para todos.
+        </h2>
+        <p class="mt-5 max-w-md text-lg text-cocoa">Haz tu pedido por WhatsApp o síguenos en redes para ver nuestras novedades y tortas del día.</p>
+        <a href={wa()} target="_blank" rel="noopener" class="btn-wa mt-8 !px-7 !py-4 !text-base"><Icons name="wa" class="h-5 w-5" /> {site.phone}</a>
+        <p class="mt-3 text-sm text-mocha">Atención por WhatsApp · Pedidos con anticipación</p>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 reveal">
+        {socials.map((s) => (
+          <a href={s.href} target="_blank" rel="noopener" class="group flex items-center gap-4 rounded-2xl border border-choco/10 bg-white/60 p-4 transition hover:-translate-y-0.5 hover:border-terra/40 hover:shadow-soft">
+            <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-choco text-cream transition group-hover:bg-terra"><Icons name={s.icon} class="h-5 w-5" /></span>
+            <span class="min-w-0">
+              <span class="block text-xs uppercase tracking-widest text-mocha">{s.label}</span>
+              <span class="block truncate font-semibold">{s.handle}</span>
+            </span>
+            <Icons name="arrow" class="ml-auto h-5 w-5 shrink-0 text-mocha transition group-hover:translate-x-1 group-hover:text-terra" />
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

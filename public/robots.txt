@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://panaderia-elisa.vercel.app/sitemap-index.xml

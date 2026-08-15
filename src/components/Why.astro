@@ -1,0 +1,33 @@
+---
+const reasons = [
+  { n: '1', t: 'Sabor auténtico', d: 'Hecho en casa y con máxima frescura garantizada en cada pedido.' },
+  { n: '2', t: 'Dedicación en cada detalle', d: 'Nuestros productos están elaborados con bastante dedicación, pensando en satisfacer a nuestros clientes.' },
+  { n: '3', t: 'Una experiencia distintiva', d: 'Un sabor que no encontrarás en otra pastelería.' },
+  { n: '4', t: 'Te escuchamos', d: 'Atendemos a nuestros clientes con todo el cariño y respeto que se merecen, y nos adaptamos a sus necesidades.' },
+];
+---
+<section id="porque" class="scroll-mt-24 relative overflow-hidden bg-choco py-20 text-cream sm:py-28">
+  <div aria-hidden="true" class="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-terra/30 blur-3xl"></div>
+  <div aria-hidden="true" class="pointer-events-none absolute -bottom-40 -left-20 h-96 w-96 rounded-full bg-gold/20 blur-3xl"></div>
+  <div class="container-x relative">
+    <div class="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+      <div class="reveal">
+        <p class="eyebrow text-gold before:bg-gold">La diferencia</p>
+        <h2 class="mt-4 text-4xl font-medium leading-tight tracking-tight sm:text-5xl">¿Por qué <em class="font-light italic text-gold">elegirnos?</em></h2>
+        <p class="mt-5 max-w-md text-lg text-cream/70">Más que una panadería: una forma de celebrar los momentos con quienes más quieres.</p>
+        <div class="mt-8 overflow-hidden rounded-3xl shadow-lift">
+          <img src="/img/torta-chocolate-avellanas.webp" alt="Torta de chocolate con crema de avellanas y fresas" width="570" height="570" loading="lazy" class="aspect-[4/3] w-full object-cover" />
+        </div>
+      </div>
+      <ol class="grid gap-4 sm:grid-cols-2">
+        {reasons.map((r, i) => (
+          <li class="reveal rounded-3xl border border-cream/10 bg-cream/5 p-6 backdrop-blur-sm transition hover:bg-cream/10" style={`transition-delay:${i * 80}ms`}>
+            <span class="font-display text-5xl font-light leading-none text-gold/70">{r.n}</span>
+            <h3 class="mt-4 font-display text-xl font-semibold">{r.t}</h3>
+            <p class="mt-2 leading-relaxed text-cream/70">{r.d}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>

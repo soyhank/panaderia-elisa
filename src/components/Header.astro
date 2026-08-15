@@ -1,0 +1,61 @@
+---
+import { site, nav, wa } from '../data/site';
+import Icons from './Icons.astro';
+---
+<header id="header" class="group/h fixed inset-x-0 top-0 z-50" data-scrolled="false">
+  <div class="container-x">
+    <div class="mt-3 flex items-center justify-between rounded-2xl border border-transparent px-3 py-2 transition-all duration-300 group-data-[scrolled=true]/h:border-choco/10 group-data-[scrolled=true]/h:bg-cream/85 group-data-[scrolled=true]/h:shadow-soft group-data-[scrolled=true]/h:backdrop-blur-md">
+      <a href="#top" class="flex items-center gap-3" aria-label={`${site.name} — inicio`}>
+        <img src="/img/logo.webp" alt="" width="44" height="44" class="h-11 w-11 rounded-xl shadow-soft" />
+        <span class="leading-tight">
+          <span class="block font-display text-lg font-semibold tracking-tight">Elisa <span class="text-terra">Sabor &amp; Arte</span></span>
+          <span class="block text-[11px] uppercase tracking-[0.2em] text-mocha">Panadería · Pastelería</span>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-1 lg:flex" aria-label="Principal">
+        {nav.map((n) => (
+          <a href={n.href} class="rounded-full px-4 py-2 text-sm font-medium text-cocoa transition hover:bg-choco/5 hover:text-choco">{n.label}</a>
+        ))}
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href={wa()} target="_blank" rel="noopener" class="btn-wa hidden !py-2.5 sm:inline-flex">
+          <Icons name="wa" class="h-4 w-4" /> Pedir por WhatsApp
+        </a>
+        <button id="menu-btn" class="rounded-full p-2.5 text-choco hover:bg-choco/5 lg:hidden" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu">
+          <Icons name="menu" class="h-6 w-6" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="container-x hidden lg:hidden">
+    <div class="mt-2 rounded-2xl border border-choco/10 bg-cream/95 p-3 shadow-lift backdrop-blur-md">
+      <nav class="flex flex-col" aria-label="Móvil">
+        {nav.map((n) => (
+          <a href={n.href} class="rounded-xl px-4 py-3 text-base font-medium text-cocoa hover:bg-choco/5 hover:text-choco">{n.label}</a>
+        ))}
+      </nav>
+      <a href={wa()} target="_blank" rel="noopener" class="btn-wa mt-2 w-full"><Icons name="wa" class="h-4 w-4" /> Pedir por WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.getElementById('header')!;
+  const onScroll = () => { header.dataset.scrolled = String(window.scrollY > 24); };
+  onScroll();
+  addEventListener('scroll', onScroll, { passive: true });
+
+  const btn = document.getElementById('menu-btn')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const toggle = (open?: boolean) => {
+    const o = open ?? menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', !o);
+    btn.setAttribute('aria-expanded', String(o));
+    btn.setAttribute('aria-label', o ? 'Cerrar menú' : 'Abrir menú');
+  };
+  btn.addEventListener('click', () => toggle());
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => toggle(false)));
+</script>

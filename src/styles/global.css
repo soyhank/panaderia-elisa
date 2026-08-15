@@ -1,0 +1,57 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/manrope';
+
+@theme {
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-sans: 'Manrope Variable', system-ui, sans-serif;
+
+  --color-cream: #f7f1e8;
+  --color-cream-2: #efe4d3;
+  --color-cream-3: #e6d7c1;
+  --color-choco: #2b1a12;
+  --color-cocoa: #5a3b2e;
+  --color-mocha: #8a6b5c;
+  --color-terra: #b7643c;
+  --color-terra-2: #9a4f2c;
+  --color-gold: #c6a24f;
+  --color-rose: #d98a9a;
+  --color-wa: #25d366;
+
+  --shadow-soft: 0 10px 30px -12px rgb(43 26 18 / 0.25);
+  --shadow-lift: 0 22px 50px -20px rgb(43 26 18 / 0.35);
+}
+
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+  body { @apply bg-cream text-choco font-sans antialiased; }
+  ::selection { background: var(--color-gold); color: var(--color-choco); }
+  h1, h2, h3, .font-display { font-family: var(--font-display); font-variation-settings: 'opsz' 144, 'SOFT' 50; }
+}
+
+@layer components {
+  .container-x { @apply mx-auto w-full max-w-7xl px-5 sm:px-8; }
+  .eyebrow { @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-terra; }
+  .eyebrow::before { content: ''; @apply h-px w-8 bg-terra; }
+  .btn, .btn-primary, .btn-outline, .btn-wa {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 will-change-transform;
+  }
+  .btn-primary { @apply bg-choco text-cream shadow-soft hover:-translate-y-0.5 hover:bg-terra; }
+  .btn-outline { @apply border border-choco/25 text-choco hover:border-choco hover:bg-choco hover:text-cream; }
+  .btn-wa { @apply bg-wa text-white shadow-soft hover:-translate-y-0.5 hover:bg-[#1ebe5b]; }
+  .grid-paper {
+    background-image:
+      linear-gradient(to right, rgb(183 100 60 / 0.16) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(183 100 60 / 0.16) 1px, transparent 1px);
+    background-size: 28px 28px;
+    -webkit-mask-image: linear-gradient(to top, black, transparent);
+    mask-image: linear-gradient(to top, black, transparent);
+  }
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+}
+
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.animate-marquee { animation: marquee 32s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .animate-marquee { animation: none; } }
