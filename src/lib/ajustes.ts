@@ -36,13 +36,13 @@ export async function leerAjustes(fresco = false): Promise<Ajustes> {
   const guardado = await leerJSON<Partial<Ajustes>>(RUTA_AJUSTES);
   const base = ajustesPorDefecto();
   const datos: Ajustes = { ...base, ...guardado, eventos: { ...base.eventos, ...(guardado?.eventos || {}) } };
-  cache = { datos, hasta: Date.now() + 30_000 };
+  cache = { datos, hasta: Date.now() + 10_000 };
   return datos;
 }
 
 export async function guardarAjustes(datos: Ajustes): Promise<void> {
   await guardarJSON(RUTA_AJUSTES, datos);
-  cache = { datos, hasta: Date.now() + 30_000 };
+  cache = { datos, hasta: Date.now() + 10_000 };
 }
 
 // Solo lo que puede ver cualquier visitante (nunca el token de la API de conversiones).

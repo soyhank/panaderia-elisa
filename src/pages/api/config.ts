@@ -9,7 +9,7 @@ export const GET: APIRoute = async () => {
   return new Response(JSON.stringify(ajustesPublicos(ajustes)), {
     headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'public, max-age=0, s-maxage=30, stale-while-revalidate=300',
+      'Cache-Control': 'public, max-age=0, s-maxage=15',
     },
   });
 };
