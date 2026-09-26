@@ -1,0 +1,25 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { leerSesion } from '../../lib/auth';
+
+export const prerender = false;
+
+if (leerSesion(Astro.cookies)) return Astro.redirect('/admin/panel');
+const q = Astro.url.searchParams;
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+<Admin title="Acceso administrador">
+  <main class="grid min-h-screen place-items-center bg-choco px-5 py-10">
+    <form method="post" action="/api/admin/login" class="w-full max-w-sm rounded-3xl bg-cream p-8 shadow-lift">
+      <a href="/" class="mb-6 flex justify-center"><img src="/img/logo.webp" alt="Elisa Sabor & Arte" class="h-20 w-auto" /></a>
+      <h1 class="text-2xl font-semibold">Panel de administración</h1>
+      <p class="mb-6 mt-1 text-sm text-mocha">Configura el píxel de Meta de tu web.</p>
+      {q.has('error') && <div class="alerta error" role="alert">Usuario o contraseña incorrectos.</div>}
+      {q.has('salio') && <div class="alerta info">Cerraste sesión correctamente.</div>}
+      <div class="campo"><label for="usuario">Usuario</label><input class="entrada" id="usuario" name="usuario" required autocomplete="username" autofocus /></div>
+      <div class="campo"><label for="clave">Contraseña</label><input class="entrada" id="clave" name="clave" type="password" required autocomplete="current-password" /></div>
+      <button class="btn-primary mt-2 w-full !py-3.5" type="submit">Ingresar</button>
+      <a class="mt-5 block text-center text-sm text-mocha hover:text-terra" href="/">← Volver a la web</a>
+    </form>
+  </main>
+</Admin>

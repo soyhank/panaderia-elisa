@@ -1,0 +1,141 @@
+---
+import Admin from '../../layouts/Admin.astro';
+import { leerSesion } from '../../lib/auth';
+import { leerAjustes, EVENTOS } from '../../lib/ajustes';
+
+export const prerender = false;
+
+const usuario = leerSesion(Astro.cookies);
+if (!usuario) return Astro.redirect('/admin');
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+const a = await leerAjustes(true);
+const q = Astro.url.searchParams;
+const errores: Record<string, string> = {
+  pixel: 'El ID del píxel debe tener entre 10 y 20 dígitos (solo números).',
+  actual: 'La contraseña actual no es correcta.',
+  corta: 'La nueva contraseña debe tener al menos 8 caracteres.',
+  repetir: 'Las contraseñas nuevas no coinciden.',
+  usuario: 'El usuario debe tener de 3 a 40 caracteres (letras, números, punto, guion o @).',
+};
+const error = errores[q.get('error') || ''];
+const ok = q.get('ok');
+const fecha = a.actualizado ? new Date(a.actualizado).toLocaleString('es-PE', { timeZone: 'America/Lima', dateStyle: 'medium', timeStyle: 'short' }) : 'Nunca';
+const activo = a.pixelActivo && Boolean(a.pixelId);
+const tokenFinal = a.capiToken ? '…' + a.capiToken.slice(-4) : '';
+---
+<Admin title="Panel de administración">
+  <header class="bg-choco text-cream">
+    <div class="container-x flex h-16 items-center gap-4">
+      <a href="/" class="font-display text-lg font-semibold">Elisa Sabor & Arte</a>
+      <span class="rounded-md bg-gold px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-choco">Admin</span>
+      <div class="ml-auto flex items-center gap-3 text-sm">
+        <span class="hidden text-cream/70 sm:inline">Hola, <strong class="text-cream">{usuario}</strong></span>
+        <a href="/" target="_blank" rel="noopener" class="rounded-full bg-white/10 px-4 py-2 hover:bg-white/20">Ver web</a>
+        <form method="post" action="/api/admin/salir"><button type="submit" class="rounded-full bg-white/10 px-4 py-2 hover:bg-white/20">Salir</button></form>
+      </div>
+    </div>
+  </header>
+
+  <main class="container-x py-8 pb-20">
+    <h1 class="text-3xl font-semibold">Píxel de Meta</h1>
+    <p class="mb-6 mt-1 text-mocha">Los cambios se aplican en la web en menos de un minuto, sin volver a publicar.</p>
+    {error && <div class="alerta error" role="alert">{error}</div>}
+    {ok === '1' && <div class="alerta ok" role="status">✓ Cambios guardados. La web los tomará en unos segundos.</div>}
+    {ok === 'clave' && <div class="alerta ok" role="status">✓ Usuario y contraseña actualizados.</div>}
+
+    <div class="grid items-start gap-6 lg:grid-cols-[1fr_330px]">
+      <div>
+        <form method="post" action="/api/admin/ajustes">
+          <section class="tarjeta">
+            <h2>Píxel de Meta <span class:list={['estado', activo ? 'on' : 'off']}>{activo ? '● Activo' : '○ Inactivo'}</span></h2>
+            <p class="mb-5 text-sm text-mocha">Pega el identificador de tu píxel (conjunto de datos). Lo encuentras en el Administrador de eventos de Meta, en Orígenes de datos.</p>
+            <label class="mb-4 flex items-center justify-between gap-4 rounded-2xl bg-cream px-4 py-3">
+              <span><strong class="block text-sm">Píxel encendido</strong><small class="text-mocha">Apágalo para dejar de enviar eventos sin borrar el ID.</small></span>
+              <span class="sw"><input type="checkbox" name="pixelActivo" value="1" checked={a.pixelActivo} aria-label="Píxel encendido" /><span></span></span>
+            </label>
+            <div class="campo">
+              <label for="pixelId">ID del píxel</label>
+              <input class="entrada" id="pixelId" name="pixelId" value={a.pixelId} inputmode="numeric" placeholder="Ej.: 1234567890123456" pattern="\d{10,20}" autocomplete="off" />
+              <small>Solo números. Déjalo vacío para quitar el píxel de la web.</small>
+            </div>
+            <h3 class="mb-2 mt-5 font-sans text-sm font-bold">Eventos que se envían</h3>
+            <div class="grid gap-2">
+              {EVENTOS.map((e) => (
+                <label class="flex cursor-pointer items-start gap-3 rounded-2xl border border-choco/10 px-4 py-3">
+                  <input type="checkbox" name={`ev_${e.id}`} value="1" checked={a.eventos[e.id] !== false} class="mt-1 h-4 w-4 accent-terra" />
+                  <span><code class="font-bold">{e.id}</code><small class="mt-1 block text-mocha">{e.donde}</small></span>
+                </label>
+              ))}
+            </div>
+            <p class="mt-3 text-xs text-mocha"><code>PageView</code> se envía siempre en cada visita mientras el píxel esté encendido.</p>
+          </section>
+
+          <section class="tarjeta">
+            <h2>API de conversiones <span class:list={['estado', a.capiToken ? 'on' : 'off']}>{a.capiToken ? 'Conectada' : 'Opcional'}</span></h2>
+            <p class="mb-5 text-sm text-mocha">Envía los mismos eventos desde el servidor para no perder datos por bloqueadores o iPhone. Meta los une con el píxel por el mismo <code>event_id</code>, así que no se duplican.</p>
+            <div class="campo">
+              <label for="capiToken">Token de acceso</label>
+              <input class="entrada" id="capiToken" name="capiToken" type="password" autocomplete="off" placeholder={a.capiToken ? `Guardado (termina en ${tokenFinal}). Déjalo vacío para conservarlo` : 'Pega el token generado en la configuración del píxel'} />
+              {a.capiToken && <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="borrarToken" value="1" /> Borrar el token guardado</label>}
+              <small>Se guarda en un almacén privado del servidor y nunca se muestra en la web.</small>
+            </div>
+            <div class="campo">
+              <label for="testEventCode">Código de eventos de prueba (opcional)</label>
+              <input class="entrada" id="testEventCode" name="testEventCode" value={a.testEventCode} placeholder="Ej.: TEST12345" autocomplete="off" />
+              <small>Úsalo solo mientras pruebas en «Probar eventos» de Meta; bórralo después.</small>
+            </div>
+          </section>
+
+          <div class="sticky bottom-4 z-10 flex items-center justify-between gap-3 rounded-2xl bg-choco px-5 py-3 text-cream shadow-lift">
+            <span class="text-sm text-cream/70">Guarda para aplicar los cambios en la web.</span>
+            <button class="btn-wa !bg-terra hover:!bg-terra-2" type="submit">Guardar cambios</button>
+          </div>
+        </form>
+
+        <section class="tarjeta mt-8" id="seguridad">
+          <h2>Usuario y contraseña</h2>
+          <p class="mb-5 text-sm text-mocha">Cambia el acceso a este panel. Mínimo 8 caracteres.</p>
+          <form method="post" action="/api/admin/clave">
+            <div class="grid gap-x-4 sm:grid-cols-2">
+              <div class="campo"><label for="nuevoUsuario">Usuario</label><input class="entrada" id="nuevoUsuario" name="nuevoUsuario" value={usuario} autocomplete="username" /></div>
+              <div class="campo"><label for="actual">Contraseña actual</label><input class="entrada" id="actual" name="actual" type="password" required autocomplete="current-password" /></div>
+              <div class="campo"><label for="nueva">Nueva contraseña</label><input class="entrada" id="nueva" name="nueva" type="password" required minlength="8" autocomplete="new-password" /></div>
+              <div class="campo"><label for="repetir">Repetir nueva contraseña</label><input class="entrada" id="repetir" name="repetir" type="password" required minlength="8" autocomplete="new-password" /></div>
+            </div>
+            <button class="btn-primary" type="submit">Actualizar acceso</button>
+          </form>
+        </section>
+      </div>
+
+      <aside>
+        <section class="tarjeta">
+          <h2 class="!text-lg">Estado</h2>
+          <dl class="text-sm">
+            {[
+              ['Píxel', a.pixelId || 'Sin configurar'],
+              ['API de conversiones', a.capiToken ? 'Sí' : 'No'],
+              ['Eventos activos', `${EVENTOS.filter((e) => a.eventos[e.id] !== false).length} de ${EVENTOS.length}`],
+              ['Último cambio', `${fecha}${a.actualizadoPor ? ` · ${a.actualizadoPor}` : ''}`],
+            ].map(([k, v]) => (
+              <div class="flex justify-between gap-3 border-b border-dashed border-choco/15 py-2 last:border-0"><dt class="text-mocha">{k}</dt><dd class="break-all text-right font-semibold">{v}</dd></div>
+            ))}
+          </dl>
+        </section>
+        <section class="tarjeta">
+          <h2 class="!text-lg">Comprobar que funciona</h2>
+          <ol class="list-decimal space-y-2 pl-5 text-sm text-cocoa">
+            <li>Guarda el ID del píxel.</li>
+            <li>Abre la <a class="font-semibold text-terra underline" href="/?probar_pixel=1" target="_blank" rel="noopener">web en modo prueba</a>: verás abajo a la izquierda cada evento que se dispara.</li>
+            <li>Toca «Pedir» en un producto de la carta.</li>
+            <li>En Meta, entra a <strong>Administrador de eventos → tu píxel → Probar eventos</strong> y confirma que llegan.</li>
+          </ol>
+        </section>
+        <section class="tarjeta">
+          <h2 class="!text-lg">¿Qué evento optimizo?</h2>
+          <p class="text-sm text-mocha">Los pedidos se cierran por WhatsApp, así que el evento clave es <code>Lead</code>: se envía con el nombre y el precio del producto cada vez que alguien toca «Pedir». Úsalo como conversión en tus campañas.</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+</Admin>

@@ -56,6 +56,10 @@ const ld = {
     <Footer />
     <WhatsAppFloat />
     <script>
+      import { iniciarPixel } from '../scripts/pixel';
+      iniciarPixel();
+    </script>
+    <script>
       const els = document.querySelectorAll('.reveal');
       if ('IntersectionObserver' in window) {
         const io = new IntersectionObserver((entries) => {

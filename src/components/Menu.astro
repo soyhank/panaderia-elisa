@@ -30,7 +30,7 @@ const orderMsg = (n: string) => `Hola Elisa 👋, quisiera pedir: ${n}. ¿Me con
     <div id="menu-grid" class="mt-10 grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
       {featured.map((p, i) => (
         <article data-cat={p.cat} class="group reveal flex flex-col overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-choco/5 transition duration-300 hover:-translate-y-1 hover:shadow-lift" style={`transition-delay:${(i % 4) * 60}ms`}>
-          <a href={wa(orderMsg(p.name))} target="_blank" rel="noopener" class="relative block overflow-hidden" aria-label={`Pedir ${p.name} por WhatsApp`}>
+          <a data-pedido={p.name} data-precio={p.price} data-categoria={p.cat} href={wa(orderMsg(p.name))} target="_blank" rel="noopener" class="relative block overflow-hidden" aria-label={`Pedir ${p.name} por WhatsApp`}>
             <img src={p.img} alt={p.name} width="640" height="640" loading="lazy" class="aspect-square w-full object-cover transition duration-700 group-hover:scale-105" />
             {p.price && <span class="absolute left-3 top-3 rounded-full bg-cream/95 px-3 py-1 text-xs font-bold text-choco shadow-soft">{fmt(p.price)}</span>}
           </a>
@@ -38,7 +38,7 @@ const orderMsg = (n: string) => `Hola Elisa 👋, quisiera pedir: ${n}. ¿Me con
             <h3 class="font-display text-[1.05rem] font-semibold leading-snug">{p.name}</h3>
             <p class="mt-1.5 line-clamp-3 text-sm leading-relaxed text-mocha">{p.desc}</p>
             {p.note && <p class="mt-2 text-[11px] font-semibold uppercase tracking-wider text-terra/80">{p.note}</p>}
-            <a href={wa(orderMsg(p.name))} target="_blank" rel="noopener" class="mt-auto inline-flex items-center gap-1.5 pt-3 text-sm font-semibold text-terra transition hover:text-terra-2">
+            <a data-pedido={p.name} data-precio={p.price} data-categoria={p.cat} href={wa(orderMsg(p.name))} target="_blank" rel="noopener" class="mt-auto inline-flex items-center gap-1.5 pt-3 text-sm font-semibold text-terra transition hover:text-terra-2">
               Pedir <Icons name="arrow" class="h-4 w-4 transition group-hover:translate-x-0.5" />
             </a>
           </div>
@@ -59,7 +59,7 @@ const orderMsg = (n: string) => `Hola Elisa 👋, quisiera pedir: ${n}. ¿Me con
             <ul class="divide-y divide-choco/10">
               {byCat(c.id).map((p) => (
                 <li>
-                  <a href={wa(orderMsg(p.name))} target="_blank" rel="noopener" class="group block py-3 transition" title="Pedir por WhatsApp">
+                  <a data-pedido={p.name} data-precio={p.price} data-categoria={p.cat} href={wa(orderMsg(p.name))} target="_blank" rel="noopener" class="group block py-3 transition" title="Pedir por WhatsApp">
                     <span class="flex items-baseline gap-2">
                       <span class="font-semibold transition group-hover:text-terra">{p.name}</span>
                       <span class="mx-1 flex-1 border-b border-dotted border-choco/25 group-hover:border-terra/50"></span>
